@@ -1,5 +1,8 @@
 package org.ds.member;
 
+/*
+ * Member class represents a node in the system 
+ * */
 public class Member {
 	private String address;
 	private int heartBeat;
