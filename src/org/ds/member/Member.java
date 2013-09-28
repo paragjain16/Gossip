@@ -1,25 +1,26 @@
 package org.ds.member;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Member {
+public class Member implements Serializable{
 	private String address;
 	private int heartBeat;
 	private String identifier;
-	private Date timeStamp;
+	private long timeStamp;
 
 	public Member(String address, String id){
 		this.address = address;
 		this.heartBeat = 0;
 		this.identifier = id+address;
-		this.timeStamp = new Date();
+		this.timeStamp = new Date().getTime();
 	}
 	
-	public Date getTimeStamp() {
+	public long getTimeStamp() {
 		return timeStamp;
 	}
 
-	public void setTimeStamp(Date timeStamp) {
+	public void setTimeStamp(long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 	public void incrementHB(){

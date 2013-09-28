@@ -29,7 +29,7 @@ public class Node {
 			itself = new Member(socket.getInetAddress().getHostAddress(), id);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
-			gossiper = new Gossiper(aliveMembers,deadMembers, lockUpdateMember, itself);
+			gossiper = new Gossiper(aliveMembers,deadMembers, lockUpdateMember, itself, socket);
 			final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 			gossip = scheduler.scheduleAtFixedRate(gossiper, 0, 1, TimeUnit.SECONDS);
 				
