@@ -34,6 +34,11 @@ public class Node {
 			socket = new DatagramSocket(port);
 			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);
 			aliveMembers.put(itself.getIdentifier(), itself);
+			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
+			gossiper = new Gossiper(aliveMembers, deadMembers, lockUpdateMember, itself, socket);
+			final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
+			gossip = scheduler.scheduleAtFixedRate(gossiper, 0, 1, TimeUnit.SECONDS);
+				
 			DSLogger.log("Node", "Node",
 					"Member with id " + itself.getIdentifier() + " joined");
 

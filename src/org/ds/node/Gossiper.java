@@ -53,6 +53,7 @@ public class Gossiper implements Runnable{
 			oos.writeObject(memberList);
 			byte[] buf = baos.toByteArray();
 			Member memberToGossip = chooseRandom();
+			printGossip(memberToGossip);
 			if(memberToGossip!=null){
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
 				socket.send(packet);
@@ -74,5 +75,21 @@ public class Gossiper implements Runnable{
 		}
 		return null;
 		
+	}
+	public void printGossip(Member mem){
+		System.out.println("Gossiping to "+mem.getIdentifier());
+		System.out.println("Alive Members ");
+		Set<String> keys = aliveMembers.keySet();;
+		Member aMember;
+		for(String key: keys){
+			aMember =aliveMembers.get(key);
+			System.out.println(aMember.getIdentifier());
+		}
+		System.out.println("Dead Members ");
+		keys = deadMembers.keySet();;
+		for(String key: keys){
+			aMember =deadMembers.get(key);
+			System.out.println(aMember.getIdentifier());
+		}
 	}
 }
