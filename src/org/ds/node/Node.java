@@ -23,19 +23,16 @@ public class Node {
 	private DatagramSocket socket;
 	private Gossiper gossiper;
 	private Receiver receiver;
-	private int port = 3456;
-	private String id="1";
 	private Member itself;
 
 	private ScheduledFuture<?> gossip = null;
 
-	public Node() {
+	public Node( int port,String id) {
 		aliveMembers = new HashMap<String, Member>();
 		deadMembers = new HashMap<String, Member>();
 		try {
 			socket = new DatagramSocket(port);
 			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);
-			//itself = new Member(socket.getInetAddress(), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
 			gossiper = new Gossiper(aliveMembers, deadMembers, lockUpdateMember, itself, socket);
@@ -63,8 +60,19 @@ public class Node {
 		String contactMachineIP;
 		String contactMachinePort;
 		String contactMachineId;
+		int port = 0;
+		String id = null;
 		Member contactMember = null;
-		Node node = new Node();
+		if(args.length < 1){
+			System.out.println("Please pass id  as a parameter");
+			System.exit(0);
+		}
+		else{
+			port=Integer.parseInt(args[0]);
+			id=args[1];
+		}
+		Node node = new Node(port,id);
+		System.out.println("Node Id"+id+"started with port: "+port);
 		getLocalIP();
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
