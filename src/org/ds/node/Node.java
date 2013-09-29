@@ -1,9 +1,12 @@
 package org.ds.node;
 
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -21,7 +24,7 @@ public class Node {
 	private Gossiper gossiper;
 	private Receiver receiver;
 	private int port = 3456;
-	private String id;
+	private String id="1";
 	private Member itself;
 
 	private ScheduledFuture<?> gossip = null;
@@ -31,7 +34,8 @@ public class Node {
 		deadMembers = new HashMap<String, Member>();
 		try {
 			socket = new DatagramSocket(port);
-			itself = new Member(socket.getInetAddress(), id, port);
+			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);
+			//itself = new Member(socket.getInetAddress(), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node",
 					"Member with id " + itself.getIdentifier() + " joined");
@@ -39,6 +43,9 @@ public class Node {
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (gossip != null)
@@ -53,6 +60,7 @@ public class Node {
 		String contactMachineId;
 		Member contactMember = null;
 		Node node = new Node();
+		getLocalIP();
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
 		contactMachinePort = contactMachineAddr.split(":")[1];
@@ -80,4 +88,37 @@ public class Node {
 		receiveThread.start();
 
 	}
+	
+	public static String getLocalIP(){
+		Enumeration<NetworkInterface> interfaces = null;
+		try {
+			interfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		while (interfaces.hasMoreElements()){
+		    NetworkInterface current = interfaces.nextElement();
+		    try {
+
+				if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    Enumeration<InetAddress> addresses = current.getInetAddresses();
+		    while (addresses.hasMoreElements()){
+		        InetAddress current_addr = addresses.nextElement();
+		        if (current_addr.isLoopbackAddress()) continue;
+		        if(current_addr instanceof Inet4Address){
+		        String addr=current_addr.getHostAddress();
+		        if(addr.contains(".")){
+		        	return addr;
+		        }
+		    }
+		}
+	}
+		return null;
+	}
+	
 }
