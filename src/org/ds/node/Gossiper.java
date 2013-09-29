@@ -43,6 +43,7 @@ public class Gossiper implements Runnable{
 			for(String key: keys){
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
+					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
 					deadMembers.put(aMember.getIdentifier(), aMember);
 					aliveMembers.remove(aMember.getIdentifier());
 				}
@@ -69,14 +70,18 @@ public class Gossiper implements Runnable{
 	}
 	
 	public Member chooseRandom(){
+		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
 		Random random = new Random();
 		int tryAnother = 15;
 		while(tryAnother-- >0){
 			int i = random.nextInt(memberList.size());
+			DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
 			if(!(memberList.get(i) == itself)){
+				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen");
 				return memberList.get(i);
 			}
 		}
+		DSLogger.log("Gossiper", "chooseRandom", "No members to choose");
 		return null;
 		
 	}
