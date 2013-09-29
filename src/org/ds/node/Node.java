@@ -101,15 +101,14 @@ public class Node {
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers,
 				node.lockUpdateMember, node.itself, node.socket);
 		DSLogger.log("Node", "main", "Starting to gossip");
-		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(
-				1);
+		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(2);
 		DSLogger.log("Node", "main", "Starting to gossip step 2");
-		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1,
-				TimeUnit.SECONDS);
+		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1, TimeUnit.SECONDS);
 		DSLogger.log("Node", "main", "Starting receiver");
 		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.socket, node.lockUpdateMember);
-		Thread receiveThread=new Thread(node.receiver);
-		receiveThread.start();
+		scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
+		//Thread receiveThread=new Thread(node.receiver);
+		//receiveThread.start();
 		DSLogger.log("Node", "main", "Started receiver");
 		while(true){}
 	}
