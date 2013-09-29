@@ -38,6 +38,7 @@ public class Receiver implements Runnable {
 		byte[] msgBuffer = new byte[2048];
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
+		while(true){
 		try {
 			nodeSocket.receive(msgPacket);
 			DSLogger.log("Receiver", "run", "Received data over UDP socket") ;
@@ -135,6 +136,7 @@ public class Receiver implements Runnable {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
 		}
 	}
 	
