@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 
 public class Receiver implements Runnable {
@@ -38,6 +39,8 @@ public class Receiver implements Runnable {
 				msgBuffer.length);
 		try {
 			nodeSocket.receive(msgPacket);
+			DSLogger.log("Receiver", "run", "Received data over UDP socket") ;
+            
 			ByteArrayInputStream bis = new ByteArrayInputStream(
 					msgPacket.getData());
 			ObjectInputStream ois = new ObjectInputStream(bis);
@@ -46,7 +49,8 @@ public class Receiver implements Runnable {
 
 			if (memberList instanceof List<?>) {
 				List<Member> memList = (List<Member>) memberList;
-
+                DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
+                		
 				synchronized (nodeLockObject) {
 					for (Member member : memList) { // Iterate over the member
 													// list
