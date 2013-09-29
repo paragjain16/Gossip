@@ -33,7 +33,7 @@ public class Gossiper implements Runnable{
 	public void run(){
 		DSLogger.log("Gossiper", "run", "Entered");
 		synchronized(lockUpdateMember){
-			DSLogger.log("Gossiper", "run", "Entered synchronized block");
+			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
@@ -51,6 +51,7 @@ public class Gossiper implements Runnable{
 			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
 		}
+		DSLogger.log("Gossiper", "run", "Lock released by gossiper");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {

@@ -54,6 +54,7 @@ public class Receiver implements Runnable {
                 	DSLogger.log("Receiver", "run", "Received member:  "+mem.getIdentifier()+" with heartbeat:"+mem.getHeartBeat()) ;
                 }
 				synchronized (nodeLockObject) {
+					DSLogger.log("Receiver", "run", "Lock Acquired by receiver") ;
 					for (Member member : memList) { // Iterate over the member
 													// list
 													// received over the network
@@ -114,6 +115,7 @@ public class Receiver implements Runnable {
 						}
 					}
 				}
+				DSLogger.log("Receiver", "run", "Lock released by receiver") ;
 			}
 
 		} catch (IOException e) {
