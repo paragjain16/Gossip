@@ -31,11 +31,13 @@ public class Gossiper implements Runnable{
 	}
 	
 	public void run(){
+		DSLogger.log("Gossiper", "run", "Entered");
 		synchronized(lockUpdateMember){
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
-			Set<String> keys = aliveMembers.keySet();;
+			DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
+			Set<String> keys = aliveMembers.keySet();
 			Member aMember;
 			for(String key: keys){
 				aMember =aliveMembers.get(key);
@@ -44,6 +46,7 @@ public class Gossiper implements Runnable{
 					aliveMembers.remove(aMember.getIdentifier());
 				}
 			}
+			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
 		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
