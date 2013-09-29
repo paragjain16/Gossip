@@ -23,9 +23,8 @@ public class Node {
 	private int port = 3456;
 	private String id;
 	private Member itself;
-	
+
 	private ScheduledFuture<?> gossip = null;
-	
 
 	public Node() {
 		aliveMembers = new HashMap<String, Member>();
@@ -35,8 +34,7 @@ public class Node {
 			itself = new Member(socket.getInetAddress(), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node",
-					"Member with id " + itself.getIdentifier() + " joined");	
-		
+					"Member with id " + itself.getIdentifier() + " joined");
 
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -50,18 +48,19 @@ public class Node {
 	}
 
 	public static void main(String[] args) {
-		 String contactMachineIP;
-		 String contactMachinePort;
-		 String contactMachineId;
-		 Member contactMember=null;
+		String contactMachineIP;
+		String contactMachinePort;
+		String contactMachineId;
+		Member contactMember = null;
 		Node node = new Node();
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
 		contactMachinePort = contactMachineAddr.split(":")[1];
 		contactMachineId = contactMachineAddr.split(":")[2];
-		
+
 		try {
-			contactMember = new Member(InetAddress.getByName(contactMachineIP), contactMachineId,Integer.parseInt(contactMachinePort));
+			contactMember = new Member(InetAddress.getByName(contactMachineIP),
+					contactMachineId, Integer.parseInt(contactMachinePort));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -76,5 +75,9 @@ public class Node {
 				1);
 		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1,
 				TimeUnit.SECONDS);
+		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.socket, node.lockUpdateMember);
+		Thread receiveThread=new Thread(node.receiver);
+		receiveThread.start();
+
 	}
 }
