@@ -76,7 +76,7 @@ public class Gossiper implements Runnable{
 		return null;
 		
 	}
-	/*Print Gossip*/
+	/*Print Gossip method*/
 	public void printGossip(Member mem){
 		System.out.println("Gossiping to "+mem.getIdentifier());
 		System.out.println("Alive Members ");
