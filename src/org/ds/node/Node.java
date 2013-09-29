@@ -36,12 +36,12 @@ public class Node {
 			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
-			gossiper = new Gossiper(aliveMembers, deadMembers, lockUpdateMember, itself, socket);
-			final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
-			gossip = scheduler.scheduleAtFixedRate(gossiper, 0, 1, TimeUnit.SECONDS);
-				
-			DSLogger.log("Node", "Node",
-					"Member with id " + itself.getIdentifier() + " joined");
+//			gossiper = new Gossiper(aliveMembers, deadMembers, lockUpdateMember, itself, socket);
+//			final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
+//			gossip = scheduler.scheduleAtFixedRate(gossiper, 0, 1, TimeUnit.SECONDS);
+//				
+//			DSLogger.log("Node", "Node",
+//					"Member with id " + itself.getIdentifier() + " joined");
 
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -74,7 +74,7 @@ public class Node {
 		}
 		Node node = new Node(port,id);
 		System.out.println("Node Id"+id+"started with port: "+port);
-		getLocalIP();
+	
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
 		contactMachinePort = contactMachineAddr.split(":")[1];

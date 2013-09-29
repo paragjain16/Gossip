@@ -50,7 +50,9 @@ public class Receiver implements Runnable {
 			if (memberList instanceof List<?>) {
 				List<Member> memList = (List<Member>) memberList;
                 DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
-                		
+                for(Member mem:memList){
+                	DSLogger.log("Receiver", "run", "Received member:  "+mem.getIdentifier()+" with heartbeat:"+mem.getHeartBeat()) ;
+                }
 				synchronized (nodeLockObject) {
 					for (Member member : memList) { // Iterate over the member
 													// list
