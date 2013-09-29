@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
@@ -62,6 +63,7 @@ public class Receiver implements Runnable {
 						String memAddress = member.getIdentifier();
 
 						if (aliveMap.containsKey(memAddress)) { // Found a match
+							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
 							if (localMemberObj.getHeartBeat() >= member
 									.getHeartBeat()) {
@@ -84,6 +86,8 @@ public class Receiver implements Runnable {
 						// member
 						else {
 							if (deadMap.containsKey(memAddress)) {
+								DSLogger.log("Receiver", "run", "Found match in dead map for: "+memAddress); 
+
 								// Check if the local member present in the dead
 								// Map
 								// has a heartbeat greater than the heartbeat of
@@ -101,6 +105,8 @@ public class Receiver implements Runnable {
 											// it from dead member list and add
 											// it
 											// to alive member list.
+									DSLogger.log("Receiver", "run", "Reincarnation for "+memAddress); 
+
 									Member localObj = deadMap.get(memAddress);
 									localObj.setHeartBeat(member.getHeartBeat());
 									localObj.setTimeStamp(new Date().getTime());
@@ -110,11 +116,16 @@ public class Receiver implements Runnable {
 							}
 
 							else { // A new member is being added to the list.
+								DSLogger.log("Receiver", "run", "New member added with "+memAddress); 
 								aliveMap.put(memAddress, member);
 							}
 						}
 					}
 				}
+				DSLogger.log("Receiver", "run", "********Alive members after update*******") ;
+				printMemberMap(aliveMap);
+				DSLogger.log("Receiver", "run", "**********Dead members after update*******") ;
+				printMemberMap(deadMap);
 				DSLogger.log("Receiver", "run", "Lock released by receiver") ;
 			}
 
@@ -124,6 +135,17 @@ public class Receiver implements Runnable {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/*Print Gossip method*/
+	public void printMemberMap(Map<String,Member> memberMap){
+		
+		Set<String> keys = memberMap.keySet();;
+		Member aMember;
+		for(String key: keys){
+			aMember =memberMap.get(key);
+			DSLogger.log("Receiver", "printMemberMap ", aMember.getIdentifier());
 		}
 	}
 }
