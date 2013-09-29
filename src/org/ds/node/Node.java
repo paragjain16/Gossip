@@ -19,7 +19,7 @@ import org.ds.networkConf.XmlParseUtility;
 public class Node {
 	private HashMap<String, Member> aliveMembers;
 	private HashMap<String, Member> deadMembers;
-	private Object lockUpdateMember;
+	final private Object lockUpdateMember;
 	private DatagramSocket socket;
 	private Gossiper gossiper;
 	private Receiver receiver;
@@ -30,6 +30,7 @@ public class Node {
 	public Node( int port,String id) {
 		aliveMembers = new HashMap<String, Member>();
 		deadMembers = new HashMap<String, Member>();
+		lockUpdateMember = new Object();
 		try {
 			socket = new DatagramSocket(port);
 			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);

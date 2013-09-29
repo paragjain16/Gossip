@@ -14,7 +14,7 @@ public class Member implements Serializable{
 	public Member(InetAddress address, String id, int port){
 		this.address = address;
 		this.heartBeat = 0;
-		this.identifier = id+address.getHostAddress();
+		this.identifier = id+":"+address.getHostAddress();
 		this.timeStamp = new Date().getTime();
 		this.port = port;
 	}

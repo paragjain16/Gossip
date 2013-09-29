@@ -33,6 +33,7 @@ public class Gossiper implements Runnable{
 	public void run(){
 		DSLogger.log("Gossiper", "run", "Entered");
 		synchronized(lockUpdateMember){
+			DSLogger.log("Gossiper", "run", "Entered synchronized block");
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
