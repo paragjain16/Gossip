@@ -14,54 +14,82 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class XmlParseUtility {
-    private static List<String> nwServerIpAddrList=new ArrayList<String>();
-    private static final String FILENAME="network_configuration.xml";
-    
-	public static List<String> getNetworkServerIPAddrs(){
-		SAXParserFactory parserFactory= SAXParserFactory.newInstance();
-		try {
-			SAXParser parser= parserFactory.newSAXParser();
-			File currentJavaJarFile = new File(XmlParseUtility.class.getProtectionDomain().getCodeSource().getLocation().getPath());   
-			String currentJavaJarFilePath = currentJavaJarFile.getAbsolutePath();		
-			String currentRootDirectoryPath = currentJavaJarFilePath.replace(currentJavaJarFile.getName(), "");			
-			try {
-				nwServerIpAddrList.clear();
-				parser.parse(currentRootDirectoryPath+FILENAME, new XmlParseUtility().new TagHandler() );
-				
-			} catch (IOException e) {				
-				e.printStackTrace();
-			}
-		} catch (ParserConfigurationException e) {
-			
-			e.printStackTrace();
-		} catch (SAXException e) {
-			
-			e.printStackTrace();
+
+	private static final String FILENAME = "network_configuration.xml";
+	private static List<String> nwServerIpAddrList = new ArrayList<String>();
+    private static String contactMachineAddr=new String();
+	public static List<String> getNetworkServerIPAddrs() {
+		if(nwServerIpAddrList.isEmpty()){
+			parseFile();
 		}
 		return nwServerIpAddrList;
 	}
 	
-	 private class TagHandler extends DefaultHandler {
-		 boolean serverAddr=false;
+    private static void parseFile(){
+    	SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		try {
+			SAXParser parser = parserFactory.newSAXParser();
+			File currentJavaJarFile = new File(XmlParseUtility.class
+					.getProtectionDomain().getCodeSource().getLocation()
+					.getPath());
+			String currentJavaJarFilePath = currentJavaJarFile
+					.getAbsolutePath();
+			String currentRootDirectoryPath = currentJavaJarFilePath.replace(
+					currentJavaJarFile.getName(), "");
+			try {
+				nwServerIpAddrList.clear();
+				parser.parse(currentRootDirectoryPath + FILENAME,
+						new XmlParseUtility().new TagHandler());
 
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (ParserConfigurationException e) {
+
+			e.printStackTrace();
+		} catch (SAXException e) {
+
+			e.printStackTrace();
+		}
+    }
+
+	public static String getContactMachineAddr() {
+		if(contactMachineAddr.equals("")){
+			parseFile();
+		}
+		return contactMachineAddr;
+	}
+
+
+
+
+	private class TagHandler extends DefaultHandler {
+		boolean serverAddr = false;
+        boolean contactMachine=false;
 		@Override
 		public void characters(char[] ch, int start, int length)
-				throws SAXException {		
-			if(serverAddr){
+				throws SAXException {
+			if (serverAddr) {
 				nwServerIpAddrList.add(new String(ch, start, length));
-				serverAddr=false;
+				serverAddr = false;
+			}
+			if(contactMachine){
+				contactMachineAddr=new String(ch,start,length);
+				contactMachine=false;
 			}
 		}
-
-		
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
-				Attributes attributes) throws SAXException {			
-			if(qName.equalsIgnoreCase("serverAddr")){
-				serverAddr=true;
+				Attributes attributes) throws SAXException {
+			if (qName.equalsIgnoreCase("serverAddr")) {
+				serverAddr = true;
 			}
+			if (qName.equalsIgnoreCase("contactMachine")) {
+				contactMachine = true;
+			}
+			
 		}
-		 
-	 }
+
+	}
 }
