@@ -97,17 +97,21 @@ public class Node {
 			e.printStackTrace();
 		}
 		node.aliveMembers.put(contactMember.getIdentifier(), contactMember);
-		DSLogger.log("Gossiper", "run", "Alive member list updated with "+contactMember.getIdentifier());
+		DSLogger.log("Node", "main", "Alive member list updated with "+contactMember.getIdentifier());
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers,
 				node.lockUpdateMember, node.itself, node.socket);
+		DSLogger.log("Node", "main", "Starting to gossip");
 		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(
 				1);
+		DSLogger.log("Node", "main", "Starting to gossip step 2");
 		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1,
 				TimeUnit.SECONDS);
+		DSLogger.log("Node", "main", "Starting receiver");
 		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.socket, node.lockUpdateMember);
 		Thread receiveThread=new Thread(node.receiver);
 		receiveThread.start();
-
+		DSLogger.log("Node", "main", "Started receiver");
+		while(true){}
 	}
 	
 	public static String getLocalIP(){
