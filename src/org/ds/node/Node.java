@@ -26,10 +26,10 @@ public class Node {
 		deadMembers = new HashMap<String, Member>();
 		try {
 			socket = new DatagramSocket(port);
-			itself = new Member(socket.getInetAddress().getHostAddress(), id);
+			itself = new Member(socket.getInetAddress(), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
-			gossiper = new Gossiper(aliveMembers,deadMembers, lockUpdateMember, itself, socket);
+			gossiper = new Gossiper(aliveMembers, deadMembers, lockUpdateMember, itself, socket);
 			final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 			gossip = scheduler.scheduleAtFixedRate(gossiper, 0, 1, TimeUnit.SECONDS);
 				
