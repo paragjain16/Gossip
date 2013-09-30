@@ -60,12 +60,13 @@ public class Gossiper implements Runnable{
 			oos.writeObject(memberList);
 			byte[] buf = baos.toByteArray();
 			Member memberToGossip = chooseRandom();
-		
+			printGossip(memberToGossip);
 			if(memberToGossip!=null){
-				printGossip(memberToGossip);
+				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
 				socket.send(packet);
 			}
+			DSLogger.log("Gossiper", "run", "Exiting gossiper");
 		}catch (IOException e) {
 			DSLogger.log("Gossiper", "run", e.getMessage());
 			e.printStackTrace();
@@ -91,7 +92,9 @@ public class Gossiper implements Runnable{
 	}
 	/*Print Gossip method*/
 	public void printGossip(Member mem){
-		System.out.println("Gossiping to "+mem.getIdentifier());
+		if(mem!=null){
+			System.out.println("Gossiping to "+mem.getIdentifier());
+		}
 		System.out.println("Alive Members ");
 		Set<String> keys = aliveMembers.keySet();;
 		Member aMember;
