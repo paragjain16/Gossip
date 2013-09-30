@@ -30,7 +30,7 @@ public class Gossiper implements Runnable{
 		this.socket = socket;
 	}
 	
-	public void run(){
+	public void run(){	
 		DSLogger.log("Gossiper", "run", "Entered");
 		synchronized(lockUpdateMember){
 			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
@@ -52,6 +52,7 @@ public class Gossiper implements Runnable{
 			memberList = new ArrayList<Member>(aliveMembers.values());
 		}
 		DSLogger.log("Gossiper", "run", "Lock released by gossiper");
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
@@ -59,13 +60,15 @@ public class Gossiper implements Runnable{
 			oos.writeObject(memberList);
 			byte[] buf = baos.toByteArray();
 			Member memberToGossip = chooseRandom();
-			printGossip(memberToGossip);
+		
 			if(memberToGossip!=null){
+				printGossip(memberToGossip);
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
 				socket.send(packet);
 			}
 		}catch (IOException e) {
 			DSLogger.log("Gossiper", "run", e.getMessage());
+			e.printStackTrace();
 		}
 		
 	}

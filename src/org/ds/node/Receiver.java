@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +32,7 @@ public class Receiver implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-
+		DSLogger.log("Receiver", "run", "Entered Run") ;
 		byte[] msgBuffer = new byte[2048];
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
@@ -66,8 +64,7 @@ public class Receiver implements Runnable {
 						if (aliveMap.containsKey(memAddress)) { // Found a match
 							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
-							if (localMemberObj.getHeartBeat() >= member
-									.getHeartBeat()) {
+							if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
 								// Ignore, as the local member's heartbeat is
 								// greater than incoming member's heartbeat.
 

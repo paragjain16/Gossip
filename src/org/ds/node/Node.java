@@ -106,11 +106,12 @@ public class Node {
 		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1, TimeUnit.SECONDS);
 		DSLogger.log("Node", "main", "Starting receiver");
 		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.socket, node.lockUpdateMember);
-		scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
+		//scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
+		scheduler.execute(node.receiver);
 		//Thread receiveThread=new Thread(node.receiver);
 		//receiveThread.start();
 		DSLogger.log("Node", "main", "Started receiver");
-		while(true){}
+		//while(true){}
 	}
 	
 	public static String getLocalIP(){
