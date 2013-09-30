@@ -22,16 +22,17 @@ public class Gossiper implements Runnable{
 	private ArrayList<Member> memberList;
 	private DatagramSocket socket;
 	
-	public Gossiper(HashMap<String, Member> aliveMembers, HashMap<String, Member> deadMembers, Object lockUpdateMember, Member itself, DatagramSocket socket){
+	public Gossiper(HashMap<String, Member> aliveMembers, HashMap<String, Member> deadMembers, Object lockUpdateMember, Member itself){
 		this.aliveMembers = aliveMembers;
 		this.deadMembers = deadMembers;
 		this.lockUpdateMember = lockUpdateMember;
 		this.itself = itself;
-		this.socket = socket;
+		//this.socket = socket;
 	}
 	
 	public void run(){	
 		DSLogger.log("Gossiper", "run", "Entered");
+		
 		synchronized(lockUpdateMember){
 			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
 			itself.incrementHB();
@@ -56,6 +57,7 @@ public class Gossiper implements Runnable{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
+			socket = new DatagramSocket();
 			oos = new ObjectOutputStream(baos);
 			oos.writeObject(memberList);
 			byte[] buf = baos.toByteArray();
@@ -65,11 +67,14 @@ public class Gossiper implements Runnable{
 				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
 				socket.send(packet);
+				
 			}
 			DSLogger.log("Gossiper", "run", "Exiting gossiper");
 		}catch (IOException e) {
 			DSLogger.log("Gossiper", "run", e.getMessage());
 			e.printStackTrace();
+		}finally{
+			socket.close();
 		}
 		
 	}

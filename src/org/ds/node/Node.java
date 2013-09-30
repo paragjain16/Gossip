@@ -20,7 +20,7 @@ public class Node {
 	private HashMap<String, Member> aliveMembers;
 	private HashMap<String, Member> deadMembers;
 	final private Object lockUpdateMember;
-	private DatagramSocket socket;
+	private DatagramSocket receiveSocket;
 	private Gossiper gossiper;
 	private Receiver receiver;
 	private Member itself;
@@ -32,7 +32,8 @@ public class Node {
 		deadMembers = new HashMap<String, Member>();
 		lockUpdateMember = new Object();
 		try {
-			socket = new DatagramSocket(port);
+			receiveSocket = new DatagramSocket(port);
+			DSLogger.log("Node", "run", "Receving socket boud to "+receiveSocket.getInetAddress());
 			itself = new Member(InetAddress.getByName(getLocalIP()),id,port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id "+itself.getIdentifier()+" joined");
@@ -99,13 +100,13 @@ public class Node {
 		node.aliveMembers.put(contactMember.getIdentifier(), contactMember);
 		DSLogger.log("Node", "main", "Alive member list updated with "+contactMember.getIdentifier());
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers,
-				node.lockUpdateMember, node.itself, node.socket);
+				node.lockUpdateMember, node.itself);
 		DSLogger.log("Node", "main", "Starting to gossip");
 		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(2);
 		DSLogger.log("Node", "main", "Starting to gossip step 2");
 		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1, TimeUnit.SECONDS);
 		DSLogger.log("Node", "main", "Starting receiver");
-		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.socket, node.lockUpdateMember);
+		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.receiveSocket, node.lockUpdateMember);
 		//scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
 		scheduler.execute(node.receiver);
 		//Thread receiveThread=new Thread(node.receiver);
