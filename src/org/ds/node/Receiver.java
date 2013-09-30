@@ -37,7 +37,11 @@ public class Receiver implements Runnable {
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
 		while(true){
+			DSLogger.log("Receiver", "run", "Waiting to receive UDP data1") ;
+
 		try {
+			DSLogger.log("Receiver", "run", "Waiting to receive UDP data2") ;
+
 			nodeSocket.receive(msgPacket);
 			DSLogger.log("Receiver", "run", "Received data over UDP socket") ;
             
