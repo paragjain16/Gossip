@@ -21,6 +21,7 @@ public class Gossiper implements Runnable{
 	private Member itself;
 	private ArrayList<Member> memberList;
 	private DatagramSocket socket;
+	private ArrayList<String> keysToRemove;
 	
 	public Gossiper(HashMap<String, Member> aliveMembers, HashMap<String, Member> deadMembers, Object lockUpdateMember, Member itself){
 		this.aliveMembers = aliveMembers;
@@ -41,13 +42,19 @@ public class Gossiper implements Runnable{
 			DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
 			Set<String> keys = aliveMembers.keySet();
 			Member aMember;
+			keysToRemove = new ArrayList<String>();
 			for(String key: keys){
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
-					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
+					keysToRemove.add(aMember.getIdentifier());
 					deadMembers.put(aMember.getIdentifier(), aMember);
-					aliveMembers.remove(aMember.getIdentifier());
+					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
+					//aliveMembers.remove(aMember.getIdentifier());
 				}
+			}
+			for(String keytoRemove: keysToRemove){
+				aliveMembers.remove(keytoRemove);
+				DSLogger.log("Gossiper", "run", keytoRemove+" removed from alive list");
 			}
 			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
