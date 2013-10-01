@@ -13,27 +13,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.ds.member.Member;
+import org.ds.node.Node;
 
 public class NodeClient {
     public static void main(String[] args){
-    	ArrayList<Member> memberList = null;
+    	ArrayList<Member> memberList = new ArrayList<Member>();
     	
-    	System.out.println("Enter the ip address of the machine which would leave the network:");
-    	
-    	//Get the machine ip from user input.  
-        BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
-
-        String machineIp = null;
-
-        
-        try {
-        	machineIp = bReader.readLine();
-        } catch (IOException ioe) {
-           System.out.println("IO error");
-           ioe.printStackTrace();
-           System.exit(1);
-        }
-        DatagramSocket cSocket =null;
+    	DatagramSocket cSocket =null;
         try {
 			 cSocket=new DatagramSocket();
 		} catch (SocketException e) {
@@ -42,7 +28,7 @@ public class NodeClient {
 		}
         InetAddress IPAddress =null;
         try {
-			 IPAddress = InetAddress.getByName(machineIp);
+			 IPAddress = InetAddress.getByName(Node.getLocalIP());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -52,10 +38,10 @@ public class NodeClient {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
-			oos.writeObject(memberList);               //Write membership list containing the member to leave.
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(memberList);  
+		} catch (IOException e2) {
+			e2.printStackTrace();
 		}
 		byte[] buf = baos.toByteArray();
         DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, IPAddress, 3456);
