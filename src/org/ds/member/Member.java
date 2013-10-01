@@ -19,6 +19,15 @@ public class Member implements Serializable{
 		this.port = port;
 	}
 	
+	public Member(InetAddress address, int heartbeat,int port){ //For node leave purpose
+		this.address = address;
+		this.heartBeat = 0;
+		this.timeStamp = new Date().getTime();
+		this.port = port;
+	}
+	
+	
+	
 	public int getPort() {
 		return port;
 	}
