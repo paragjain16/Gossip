@@ -1,5 +1,7 @@
 package org.ds.node;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -12,6 +14,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.crypto.NodeSetData;
+
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 import org.ds.networkConf.XmlParseUtility;
@@ -89,7 +94,7 @@ public class Node {
 
 		try {
 			contactMember = new Member(InetAddress.getByName(contactMachineIP),
-					contactMachineId, Integer.parseInt(contactMachinePort));
+								contactMachineId, Integer.parseInt(contactMachinePort));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,9 +114,30 @@ public class Node {
 		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.receiveSocket, node.lockUpdateMember);
 		//scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
 		scheduler.execute(node.receiver);
+		while(true){
+			DSLogger.log("Node", "main", "Started receiver");
+			try {
+				DatagramSocket s = new DatagramSocket(3457);
+				byte b[] = new byte[2048];
+				DatagramPacket packet = new DatagramPacket(b,b.length);
+				s.receive(packet);
+				String cmd = new String(packet.getData(), 0, packet.getLength());
+				if(cmd.equals("leave")){
+					scheduler.shutdown();
+					node.receiver.shutDown();
+					
+				}
+			} catch (SocketException e) {
+				DSLogger.log("Node", "run", e.getMessage()) ;
+				e.printStackTrace();
+			} catch (IOException e) {
+				DSLogger.log("Node", "run", e.getMessage()) ;
+				e.printStackTrace();
+			}
+		}
 		//Thread receiveThread=new Thread(node.receiver);
 		//receiveThread.start();
-		DSLogger.log("Node", "main", "Started receiver");
+		
 		//while(true){}
 	}
 	

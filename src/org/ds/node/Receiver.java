@@ -1,10 +1,14 @@
 package org.ds.node;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +41,9 @@ public class Receiver implements Runnable {
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
 		while(true){
-			DSLogger.log("Receiver", "run", "Waiting to receive UDP data1") ;
 
 		try {
-			DSLogger.log("Receiver", "run", "Waiting to receive UDP data2") ;
+			DSLogger.log("Receiver", "run", "Waiting to receive UDP data") ;
 
 			nodeSocket.receive(msgPacket);
 			DSLogger.log("Receiver", "run", "Received data over UDP socket") ;
@@ -129,15 +132,49 @@ public class Receiver implements Runnable {
 				DSLogger.log("Receiver", "run", "**********Dead members after update*******") ;
 				printMemberMap(deadMap);
 				DSLogger.log("Receiver", "run", "Lock released by receiver") ;
+			}else{
+				nodeSocket.close();
+				DSLogger.log("Receiver", "run", "Shutting down reciver") ;
+				break;
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			DSLogger.log("Receiver", "run", e.getMessage()) ;			
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
+			DSLogger.log("Receiver", "run", e.getMessage()) ;
 			e.printStackTrace();
 		}
+		}
+		
+	}
+	
+	public DatagramSocket getNodeSocket() {
+		return nodeSocket;
+	}
+
+	public void setNodeSocket(DatagramSocket nodeSocket) {
+		this.nodeSocket = nodeSocket;
+	}
+
+	public void shutDown(){
+		String close = new String("close");
+
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(close);
+			DatagramPacket p = new DatagramPacket(baos.toByteArray(), baos.toByteArray().length, InetAddress.getLocalHost(),3456);
+			nodeSocket.send(p);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			DSLogger.log("Receiver", "run", e.getMessage()) ;
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			DSLogger.log("Receiver", "run", e.getMessage()) ;
+			e.printStackTrace();
 		}
 	}
 	
