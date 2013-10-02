@@ -114,10 +114,10 @@ public class Node {
 		node.receiver=new Receiver(node.aliveMembers, node.deadMembers, node.receiveSocket, node.lockUpdateMember);
 		//scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
 		scheduler.execute(node.receiver);
-		while(true){
-			DSLogger.log("Node", "main", "Started receiver");
-			try {
-				DatagramSocket s = new DatagramSocket(3457);
+		try {
+			DatagramSocket s = new DatagramSocket(3457);
+			while(true){
+				DSLogger.log("Node", "main", "Started receiver");
 				byte b[] = new byte[2048];
 				DatagramPacket packet = new DatagramPacket(b,b.length);
 				s.receive(packet);
@@ -125,15 +125,14 @@ public class Node {
 				if(cmd.equals("leave")){
 					scheduler.shutdown();
 					node.receiver.shutDown();
-					
 				}
-			} catch (SocketException e) {
-				DSLogger.log("Node", "run", e.getMessage()) ;
-				e.printStackTrace();
-			} catch (IOException e) {
-				DSLogger.log("Node", "run", e.getMessage()) ;
-				e.printStackTrace();
-			}
+			} 
+		}catch (SocketException e) {
+			DSLogger.log("Node", "run", e.getMessage()) ;
+			e.printStackTrace();
+		} catch (IOException e) {
+			DSLogger.log("Node", "run", e.getMessage()) ;
+			e.printStackTrace();
 		}
 		//Thread receiveThread=new Thread(node.receiver);
 		//receiveThread.start();
