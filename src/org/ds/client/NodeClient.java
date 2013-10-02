@@ -17,7 +17,6 @@ import org.ds.node.Node;
 
 public class NodeClient {
     public static void main(String[] args){
-    	ArrayList<Member> memberList = new ArrayList<Member>();
     	
     	DatagramSocket cSocket =null;
         try {
@@ -28,23 +27,14 @@ public class NodeClient {
 		}
         InetAddress IPAddress =null;
         try {
-			 IPAddress = InetAddress.getByName(Node.getLocalIP());
+			 IPAddress = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-        memberList.add(new Member(IPAddress, -1, 3456)); // Add ip address of member to leave and set heartbeat to -1
-              
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
-		try {
-			oos = new ObjectOutputStream(baos);
-			oos.writeObject(memberList);  
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		byte[] buf = baos.toByteArray();
-        DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, IPAddress, 3456);
+        String message="leave";            //Send a message of "leave" to the port 3457 in localhost.
+        byte[] dataToSend = new byte[1024];
+        dataToSend=message.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(dataToSend, dataToSend.length, IPAddress, 3457);
         try {
 			cSocket.send(sendPacket);
 			cSocket.close();
