@@ -13,27 +13,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.ds.member.Member;
+import org.ds.node.Node;
 
 public class NodeClient {
     public static void main(String[] args){
-    	ArrayList<Member> memberList = null;
     	
-    	System.out.println("Enter the ip address of the machine which would leave the network:");
-    	
-    	//Get the machine ip from user input.  
-        BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
-
-        String machineIp = null;
-
-        
-        try {
-        	machineIp = bReader.readLine();
-        } catch (IOException ioe) {
-           System.out.println("IO error");
-           ioe.printStackTrace();
-           System.exit(1);
-        }
-        DatagramSocket cSocket =null;
+    	DatagramSocket cSocket =null;
         try {
 			 cSocket=new DatagramSocket();
 		} catch (SocketException e) {
@@ -42,23 +27,14 @@ public class NodeClient {
 		}
         InetAddress IPAddress =null;
         try {
-			 IPAddress = InetAddress.getByName(machineIp);
+			 IPAddress = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-        memberList.add(new Member(IPAddress, -1, 3456)); // Add ip address of member to leave and set heartbeat to -1
-              
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
-		try {
-			oos.writeObject(memberList);               //Write membership list containing the member to leave.
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		byte[] buf = baos.toByteArray();
-        DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, IPAddress, 3456);
+        String message="leave";            //Send a message of "leave" to the port 3457 in localhost.
+        byte[] dataToSend = new byte[1024];
+        dataToSend=message.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(dataToSend, dataToSend.length, IPAddress, 3457);
         try {
 			cSocket.send(sendPacket);
 			cSocket.close();
