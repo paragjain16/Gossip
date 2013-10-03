@@ -74,6 +74,7 @@ public class Receiver implements Runnable {
 							if(member.getHeartBeat()==-1){ 
 								aliveMap.remove(memAddress);
 								deadMap.put(memAddress, member);
+								continue;
 							}
 							if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
 								// Ignore, as the local member's heartbeat is
