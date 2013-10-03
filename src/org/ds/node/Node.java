@@ -1,6 +1,8 @@
 package org.ds.node;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -8,8 +10,10 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -102,15 +106,42 @@ public class Node {
 						InetAddress.getByName(contactMachineIP),
 						contactMachineId, Integer.parseInt(contactMachinePort));
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			node.aliveMembers.put(contactMember.getIdentifier(), contactMember);
 			DSLogger.log("Node", "main", "Alive member list updated with "
 					+ contactMember.getIdentifier());
+		} else {
+			// Get all the other members in the network and send a gossip
+			// message
+			List<String> machineAddrList = XmlParseUtility
+					.getNetworkServerIPAddrs();
+			// Build the membership list
+			String machineIP, machinePort;
+			DatagramPacket packet = null;
+			DatagramSocket broadCastSocket = null;
+			for (String machineAddr : machineAddrList) {
+				machineIP = machineAddr.split(":")[0];
+				machinePort = machineAddr.split(":")[1];
+
+				try {
+					broadCastSocket = new DatagramSocket();
+					List<Member> memberList = new ArrayList<Member>(
+							node.aliveMembers.values());
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ObjectOutputStream oos = new ObjectOutputStream(baos);
+					oos.writeObject(memberList);
+					byte[] buf = baos.toByteArray();
+					packet = new DatagramPacket( buf, buf.length,InetAddress.getByName(machineIP),Integer.parseInt(machinePort));
+					broadCastSocket.send(packet);
+				} catch (SocketException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers,
 				node.lockUpdateMember, node.itself);
@@ -137,7 +168,9 @@ public class Node {
 					scheduler.shutdown();
 					node.receiver.shutDown();
 					node.itself.setHeartBeat(-2);
-					Thread gossipLeave = new Thread(new Gossiper(node.aliveMembers, node.deadMembers, node.lockUpdateMember, node.itself));
+					Thread gossipLeave = new Thread(new Gossiper(
+							node.aliveMembers, node.deadMembers,
+							node.lockUpdateMember, node.itself));
 					gossipLeave.start();
 					gossipLeave.join();
 					System.exit(0);
