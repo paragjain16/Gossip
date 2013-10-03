@@ -42,10 +42,10 @@ public class Receiver implements Runnable {
 		while(true){
 
 		try {
-			DSLogger.log("Receiver", "run", "Waiting to receive UDP data") ;
+			//DSLogger.log("Receiver", "run", "Waiting to receive UDP data") ;
 
 			nodeSocket.receive(msgPacket);
-			DSLogger.log("Receiver", "run", "Received data over UDP socket") ;
+			
             
 			ByteArrayInputStream bis = new ByteArrayInputStream(
 					msgPacket.getData());
@@ -55,12 +55,12 @@ public class Receiver implements Runnable {
 
 			if (memberList instanceof List<?>) {
 				List<Member> memList = (List<Member>) memberList;
-                DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
+                //DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
                 for(Member mem:memList){
                 	DSLogger.log("Receiver", "run", "Received member:  "+mem.getIdentifier()+" with heartbeat:"+mem.getHeartBeat()) ;
                 }
 				synchronized (nodeLockObject) {
-					DSLogger.log("Receiver", "run", "Lock Acquired by receiver") ;
+					//DSLogger.log("Receiver", "run", "Lock Acquired by receiver") ;
 					for (Member member : memList) { // Iterate over the member
 													// list
 													// received over the network
@@ -78,7 +78,7 @@ public class Receiver implements Runnable {
 						}
 						
 						else if (aliveMap.containsKey(memAddress)) { // Found a match
-							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
+							//DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
 							//This member is leaving the network. Remove it from alive Map and add it to dead map
 							if(member.getHeartBeat()==-1){ 
@@ -106,7 +106,7 @@ public class Receiver implements Runnable {
 						// member
 						else {
 							if (deadMap.containsKey(memAddress)) {
-								DSLogger.log("Receiver", "run", "Found match in dead map for: "+memAddress); 
+								//DSLogger.log("Receiver", "run", "Found match in dead map for: "+memAddress); 
 
 								// Check if the local member present in the dead
 								// Map

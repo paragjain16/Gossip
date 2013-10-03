@@ -35,11 +35,11 @@ public class Gossiper implements Runnable{
 		DSLogger.log("Gossiper", "run", "Entered");
 		
 		synchronized(lockUpdateMember){
-			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
+			//DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
-			DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
+			//DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
 			Set<String> keys = aliveMembers.keySet();
 			Member aMember;
 			keysToRemove = new ArrayList<String>();
@@ -58,10 +58,10 @@ public class Gossiper implements Runnable{
 				aliveMembers.remove(keytoRemove);
 				DSLogger.log("Gossiper", "run", keytoRemove+" removed from alive list");
 			}
-			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
+			//DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
 		}
-		DSLogger.log("Gossiper", "run", "Lock released by gossiper");
+		//DSLogger.log("Gossiper", "run", "Lock released by gossiper");
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
@@ -78,9 +78,9 @@ public class Gossiper implements Runnable{
 				socket.send(packet);
 				
 			}
-			DSLogger.log("Gossiper", "run", "Exiting gossiper");
+			//DSLogger.log("Gossiper", "run", "Exiting gossiper");
 		}catch (IOException e) {
-			DSLogger.log("Gossiper", "run", e.getMessage());
+			//DSLogger.log("Gossiper", "run", e.getMessage());
 			e.printStackTrace();
 		}finally{
 			socket.close();
@@ -89,7 +89,7 @@ public class Gossiper implements Runnable{
 	}
 	
 	public Member chooseRandom(){
-		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
+		//DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
 		Random random = new Random();
 		int tryAnother = 15;
 		while(tryAnother-- >0){
@@ -110,18 +110,22 @@ public class Gossiper implements Runnable{
 			//System.out.println("Gossiping to "+mem.getIdentifier());
 			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
-		System.out.println("Alive Members --------------------------- Local Time" + new Date());
-		Set<String> keys = aliveMembers.keySet();;
+		System.out.println("Alive Members ---------------------------- Local Time " + new Date());
+		DSLogger.log("Gossiper", "run", "Alive Members ---------------------------- Local Time " + new Date());
+		Set<String> keys = aliveMembers.keySet();
 		Member aMember;
 		for(String key: keys){
 			aMember =aliveMembers.get(key);
 			System.out.println(aMember.getIdentifier());
+			DSLogger.log("Gossiper", "run", aMember.getIdentifier());
 		}
-		System.out.println("Dead Members ----------------------------- Local Time"+ new Date());
+		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
 		keys = deadMembers.keySet();;
 		for(String key: keys){
 			aMember =deadMembers.get(key);
 			System.out.println(aMember.getIdentifier());
+			DSLogger.log("Gossiper", "run", "Dead Members ---------------------------- Local Time " + new Date());
+			DSLogger.log("Gossiper", "run", aMember.getIdentifier());
 		}
 	}
 }
