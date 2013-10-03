@@ -66,8 +66,18 @@ public class Receiver implements Runnable {
 													// received over the network
 
 						String memAddress = member.getIdentifier();
-
-						if (aliveMap.containsKey(memAddress)) { // Found a match
+						
+						/*
+						 * If its a contact machine address then update its id 
+						 * as this node has just started and only knows the ip address 
+						 * of contact machine
+						 * */
+						if(aliveMap.containsKey(":"+member.getAddress().getHostAddress())){
+							aliveMap.remove(":"+member.getAddress().getHostAddress());
+							aliveMap.put(memAddress, member);
+						}
+						
+						else if (aliveMap.containsKey(memAddress)) { // Found a match
 							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
 							//This member is leaving the network. Remove it from alive Map and add it to dead map

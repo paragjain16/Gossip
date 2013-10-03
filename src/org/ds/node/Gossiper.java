@@ -47,11 +47,11 @@ public class Gossiper implements Runnable{
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
 					keysToRemove.add(aMember.getIdentifier());
-					if(!aMember.getIdentifier().startsWith(":")){
-						deadMembers.put(aMember.getIdentifier(), aMember);
-						DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
+					//if(!aMember.getIdentifier().startsWith(":")){
+					deadMembers.put(aMember.getIdentifier(), aMember);
+					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
 					   //aliveMembers.remove(aMember.getIdentifier());
-					}
+					//}
 				}
 			}
 			for(String keytoRemove: keysToRemove){
