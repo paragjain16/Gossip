@@ -32,7 +32,7 @@ public class Gossiper implements Runnable{
 	}
 	
 	public void run(){	
-		DSLogger.log("Gossiper", "run", "Entered");
+		//DSLogger.log("Gossiper", "run", "Entered");
 		
 		synchronized(lockUpdateMember){
 			//DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
@@ -96,7 +96,7 @@ public class Gossiper implements Runnable{
 			int i = random.nextInt(memberList.size());
 			//DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
 			if(!(memberList.get(i) == itself)){
-				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen");
+				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen to gossip");
 				return memberList.get(i);
 			}
 		}

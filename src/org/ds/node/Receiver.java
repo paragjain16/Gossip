@@ -35,7 +35,7 @@ public class Receiver implements Runnable {
 
 	@Override
 	public void run() {
-		DSLogger.log("Receiver", "run", "Entered Run") ;
+		//DSLogger.log("Receiver", "run", "Entered Run") ;
 		byte[] msgBuffer = new byte[2048];
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
