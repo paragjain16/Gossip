@@ -35,7 +35,6 @@ public class Receiver implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		DSLogger.log("Receiver", "run", "Entered Run") ;
 		byte[] msgBuffer = new byte[2048];
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
@@ -71,6 +70,11 @@ public class Receiver implements Runnable {
 						if (aliveMap.containsKey(memAddress)) { // Found a match
 							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
+							//This member is leaving the network. Remove it from alive Map and add it to dead map
+							if(member.getHeartBeat()==-1){ 
+								aliveMap.remove(memAddress);
+								deadMap.put(memAddress, member);
+							}
 							if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
 								// Ignore, as the local member's heartbeat is
 								// greater than incoming member's heartbeat.
