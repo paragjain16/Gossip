@@ -94,7 +94,7 @@ public class Gossiper implements Runnable{
 		int tryAnother = 15;
 		while(tryAnother-- >0){
 			int i = random.nextInt(memberList.size());
-			DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
+			//DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
 			if(!(memberList.get(i) == itself)){
 				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen");
 				return memberList.get(i);
@@ -108,20 +108,20 @@ public class Gossiper implements Runnable{
 	public void printGossip(Member mem){
 		if(mem!=null){
 			//System.out.println("Gossiping to "+mem.getIdentifier());
-			System.out.println("Gossiping to "+mem.getAddress().getHostAddress());
+			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
-		System.out.println("Alive Members --------------------------- Local Time");
+		System.out.println("Alive Members --------------------------- Local Time" + new Date());
 		Set<String> keys = aliveMembers.keySet();;
 		Member aMember;
 		for(String key: keys){
 			aMember =aliveMembers.get(key);
-			System.out.println(aMember.getAddress().getHostAddress()+" --------------------------- "+new Date());
+			System.out.println(aMember.getIdentifier());
 		}
-		System.out.println("Dead Members ----------------------------- Local Time");
+		System.out.println("Dead Members ----------------------------- Local Time"+ new Date());
 		keys = deadMembers.keySet();;
 		for(String key: keys){
 			aMember =deadMembers.get(key);
-			System.out.println(aMember.getAddress().getHostAddress()+" --------------------------- "+new Date());
+			System.out.println(aMember.getIdentifier());
 		}
 	}
 }

@@ -80,6 +80,7 @@ public class Node {
 	}
 
 	public static void main(String[] args) {
+		
 		String contactMachineIP;
 		String contactMachinePort;
 		String contactMachineId;
@@ -93,6 +94,7 @@ public class Node {
 			port = Integer.parseInt(args[0]);
 			id = args[1];
 		}
+		System.setProperty("logfile.name","/tmp/machine."+id+".log");
 		Node node = new Node(port, id);
 		System.out.println("Node Id" + id + "started with port: " + port);
 
