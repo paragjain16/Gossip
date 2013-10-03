@@ -46,10 +46,12 @@ public class Gossiper implements Runnable{
 			for(String key: keys){
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
-					keysToRemove.add(aMember.getIdentifier());
-					deadMembers.put(aMember.getIdentifier(), aMember);
-					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
-					//aliveMembers.remove(aMember.getIdentifier());
+					if(!aMember.getIdentifier().startsWith(":")){
+						keysToRemove.add(aMember.getIdentifier());
+						deadMembers.put(aMember.getIdentifier(), aMember);
+						DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
+					   //aliveMembers.remove(aMember.getIdentifier());
+					}
 				}
 			}
 			for(String keytoRemove: keysToRemove){
