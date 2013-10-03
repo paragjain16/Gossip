@@ -125,7 +125,9 @@ public class Node {
 				if(cmd.equals("leave")){
 					scheduler.shutdown();
 					node.receiver.shutDown();
-					Thread gossipLeave = new Thread();
+					node.itself.setHeartBeat(-2);
+					Thread gossipLeave = new Thread(new Gossiper(node.aliveMembers, node.deadMembers, node.lockUpdateMember, node.itself));
+					gossipLeave.start();
 					gossipLeave.join();
 					System.exit(0);
 				}
