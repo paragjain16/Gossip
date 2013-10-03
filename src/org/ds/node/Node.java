@@ -149,8 +149,8 @@ public class Node {
 		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(
 				2);
 		DSLogger.log("Node", "main", "Starting to gossip step 2");
-		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 1,
-				TimeUnit.SECONDS);
+		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 500,
+				TimeUnit.MILLISECONDS);
 		DSLogger.log("Node", "main", "Starting receiver");
 		node.receiver = new Receiver(node.aliveMembers, node.deadMembers,
 				node.receiveSocket, node.lockUpdateMember);

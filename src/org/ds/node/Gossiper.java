@@ -107,20 +107,21 @@ public class Gossiper implements Runnable{
 	/*Print Gossip method*/
 	public void printGossip(Member mem){
 		if(mem!=null){
-			System.out.println("Gossiping to "+mem.getIdentifier());
+			//System.out.println("Gossiping to "+mem.getIdentifier());
+			System.out.println("Gossiping to "+mem.getAddress().getHostAddress());
 		}
-		System.out.println("Alive Members ");
+		System.out.println("Alive Members --------------------------- Local Time");
 		Set<String> keys = aliveMembers.keySet();;
 		Member aMember;
 		for(String key: keys){
 			aMember =aliveMembers.get(key);
-			System.out.println(aMember.getIdentifier());
+			System.out.println(aMember.getAddress().getHostAddress()+" --------------------------- "+new Date());
 		}
-		System.out.println("Dead Members ");
+		System.out.println("Dead Members ----------------------------- Local Time");
 		keys = deadMembers.keySet();;
 		for(String key: keys){
 			aMember =deadMembers.get(key);
-			System.out.println(aMember.getIdentifier());
+			System.out.println(aMember.getAddress().getHostAddress()+" --------------------------- "+new Date());
 		}
 	}
 }
