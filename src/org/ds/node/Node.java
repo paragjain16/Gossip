@@ -90,7 +90,7 @@ public class Node {
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
 		contactMachinePort = contactMachineAddr.split(":")[1];
-		contactMachineId = contactMachineAddr.split(":")[2];
+		contactMachineId = "";//contactMachineAddr.split(":")[2];
 
 		try {
 			contactMember = new Member(InetAddress.getByName(contactMachineIP),
@@ -125,6 +125,9 @@ public class Node {
 				if(cmd.equals("leave")){
 					scheduler.shutdown();
 					node.receiver.shutDown();
+					Thread gossipLeave = new Thread();
+					gossipLeave.join();
+					System.exit(0);
 				}
 			} 
 		}catch (SocketException e) {
@@ -134,8 +137,10 @@ public class Node {
 			DSLogger.log("Node", "run", e.getMessage()) ;
 			e.printStackTrace();
 		}
-		//Thread receiveThread=new Thread(node.receiver);
-		//receiveThread.start();
+		catch (InterruptedException e) {
+			DSLogger.log("Node", "run", e.getMessage()) ;
+			e.printStackTrace();
+		}
 		
 		//while(true){}
 	}
