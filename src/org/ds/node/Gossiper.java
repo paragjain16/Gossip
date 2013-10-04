@@ -47,7 +47,7 @@ public class Gossiper implements Runnable{
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
 					keysToRemove.add(aMember.getIdentifier());
-					//if(!aMember.getIdentifier().startsWith(":")){
+					//if(!aMember.getIdentifier().startsWith("#")){
 					deadMembers.put(aMember.getIdentifier(), aMember);
 					DSLogger.report(aMember.getIdentifier()," added to dead list");
 					   //aliveMembers.remove(aMember.getIdentifier());
@@ -104,6 +104,25 @@ public class Gossiper implements Runnable{
 		return null;
 		
 	}
+	
+	public Member chooseProbRandom(){
+		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
+		int percent = 4;
+		Random random = new Random();
+		int tryAnother = 15;
+		while(tryAnother-- >0){
+			int i = random.nextInt(memberList.size()*percent);
+			DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
+			if(!(memberList.get(i) == itself)){
+				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen to gossip");
+				return memberList.get(i);
+			}
+		}
+		DSLogger.report("Gossiper", "No members to choose");
+		return null;
+		
+	}
+	
 	/*Print Gossip method*/
 	public void printGossip(Member mem){
 		if(mem!=null){
@@ -119,7 +138,7 @@ public class Gossiper implements Runnable{
 			DSLogger.report(aMember.getIdentifier(),"");
 		}
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
-		keys = deadMembers.keySet();;
+		keys = deadMembers.keySet();
 		for(String key: keys){
 			aMember =deadMembers.get(key);
 			System.out.println(aMember.getIdentifier());
