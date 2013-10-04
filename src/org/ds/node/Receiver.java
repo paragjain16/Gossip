@@ -35,14 +35,14 @@ public class Receiver implements Runnable {
 
 	@Override
 	public void run() {
-		//DSLogger.log("Receiver", "run", "Entered Run") ;
+		DSLogger.log("Receiver", "run", "Entered Run") ;
 		byte[] msgBuffer = new byte[2048];
 		DatagramPacket msgPacket = new DatagramPacket(msgBuffer,
 				msgBuffer.length);
 		while(true){
 
 		try {
-			//DSLogger.log("Receiver", "run", "Waiting to receive UDP data") ;
+			DSLogger.log("Receiver", "run", "Waiting to receive UDP data") ;
 
 			nodeSocket.receive(msgPacket);
 			
@@ -55,12 +55,12 @@ public class Receiver implements Runnable {
 
 			if (memberList instanceof List<?>) {
 				List<Member> memList = (List<Member>) memberList;
-                //DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
+                DSLogger.log("Receiver", "run", "Received member list of size: "+memList.size()) ;
                 for(Member mem:memList){
                 	DSLogger.log("Receiver", "run", "Received member:  "+mem.getIdentifier()+" with heartbeat:"+mem.getHeartBeat()) ;
                 }
 				synchronized (nodeLockObject) {
-					//DSLogger.log("Receiver", "run", "Lock Acquired by receiver") ;
+					DSLogger.log("Receiver", "run", "Lock Acquired by receiver") ;
 					for (Member member : memList) { // Iterate over the member
 													// list
 													// received over the network
@@ -72,18 +72,19 @@ public class Receiver implements Runnable {
 						 * as this node has just started and only knows the ip address 
 						 * of contact machine
 						 * */
-						if(aliveMap.containsKey(":"+member.getAddress().getHostAddress())){
-							aliveMap.remove(":"+member.getAddress().getHostAddress());
+						if(aliveMap.containsKey("#"+member.getAddress().getHostAddress())){
+							aliveMap.remove("#"+member.getAddress().getHostAddress());
 							aliveMap.put(memAddress, member);
 						}
 						
 						else if (aliveMap.containsKey(memAddress)) { // Found a match
-							//DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
+							DSLogger.log("Receiver", "run", "Found match in alive map for: "+memAddress); 
 							Member localMemberObj = aliveMap.get(memAddress);
 							//This member is leaving the network. Remove it from alive Map and add it to dead map
 							if(member.getHeartBeat()==-1){ 
 								aliveMap.remove(memAddress);
 								deadMap.put(memAddress, member);
+								DSLogger.report(memAddress," This machine is voluntarily leaving the network");
 								continue;
 							}
 							if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
@@ -126,17 +127,19 @@ public class Receiver implements Runnable {
 											// it
 											// to alive member list.
 									DSLogger.log("Receiver", "run", "Reincarnation for "+memAddress); 
-
+									
 									Member localObj = deadMap.get(memAddress);
 									localObj.setHeartBeat(member.getHeartBeat());
 									localObj.setTimeStamp(new Date().getTime());
 									deadMap.remove(memAddress);
 									aliveMap.put(memAddress, localObj);
+									DSLogger.report(memAddress," Reincarnation of the machine with different id");
 								}
 							}
 
 							else { // A new member is being added to the list.
 								DSLogger.log("Receiver", "run", "New member added with "+memAddress); 
+								DSLogger.report(memAddress," New member added to the list");
 								aliveMap.put(memAddress, member);
 							}
 						}

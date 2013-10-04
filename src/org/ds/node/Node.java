@@ -40,14 +40,14 @@ public class Node {
 		lockUpdateMember = new Object();
 		try {
 			receiveSocket = new DatagramSocket(port);
-			//DSLogger.log("Node", "run", "Receving socket boud to "+ receiveSocket.getInetAddress());
+			// DSLogger.log("Node", "run", "Receving socket boud to "+
+			// receiveSocket.getInetAddress());
 			itself = new Member(InetAddress.getByName(getLocalIP()), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
-			DSLogger.log("Node", "Node", "Member with id " + itself.getIdentifier() + " joined");
-
+			DSLogger.log("Node", "Node",
+					"Member with id " + itself.getIdentifier() + " joined");
 
 		} catch (SocketException e) {
-
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class Node {
 	}
 
 	public static void main(String[] args) {
-		
+
 		String contactMachineIP;
 		String contactMachinePort;
 		String contactMachineId;
@@ -73,29 +73,29 @@ public class Node {
 			port = Integer.parseInt(args[0]);
 			id = args[1];
 		}
-		System.setProperty("logfile.name","/tmp/machine."+id+".log");
+		System.setProperty("logfile.name", "/tmp/machine." + id + ".log");
 		Node node = new Node(port, id);
 		System.out.println("Node with id " + id + " started with port: " + port);
 
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		contactMachineIP = contactMachineAddr.split(":")[0];
 		contactMachinePort = contactMachineAddr.split(":")[1];
-		contactMachineId = "";// contactMachineAddr.split(":")[2];
 		if (!getLocalIP().equals(contactMachineIP)) {
 			try {
 				contactMember = new Member(
 						InetAddress.getByName(contactMachineIP),
-						contactMachineId, Integer.parseInt(contactMachinePort));
+						"", Integer.parseInt(contactMachinePort));
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
+			DSLogger.report(node.itself.getIdentifier(), "Contacting the machine: "+contactMachineAddr+" to join the network");
 			node.aliveMembers.put(contactMember.getIdentifier(), contactMember);
 			DSLogger.log("Node", "main", "Alive member list updated with "
 					+ contactMember.getIdentifier());
 		} else {
-			// Get all the other members in the network and send a gossip
+			// If this is a contact machine, get all the other members in the network and send a gossip
 			// message
 			List<String> machineAddrList = XmlParseUtility
 					.getNetworkServerIPAddrs();
@@ -115,7 +115,9 @@ public class Node {
 					ObjectOutputStream oos = new ObjectOutputStream(baos);
 					oos.writeObject(memberList);
 					byte[] buf = baos.toByteArray();
-					packet = new DatagramPacket( buf, buf.length,InetAddress.getByName(machineIP),Integer.parseInt(machinePort));
+					packet = new DatagramPacket(buf, buf.length,
+							InetAddress.getByName(machineIP),
+							Integer.parseInt(machinePort));
 					broadCastSocket.send(packet);
 				} catch (SocketException e) {
 					e.printStackTrace();
@@ -127,9 +129,11 @@ public class Node {
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers,
 				node.lockUpdateMember, node.itself);
 		DSLogger.log("Node", "main", "Starting to gossip");
-		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(2);
-		
-		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 500, TimeUnit.MILLISECONDS);
+		final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(
+				2);
+
+		node.gossip = scheduler.scheduleAtFixedRate(node.gossiper, 0, 500,
+				TimeUnit.MILLISECONDS);
 		DSLogger.log("Node", "main", "Starting receiver thread");
 		node.receiver = new Receiver(node.aliveMembers, node.deadMembers,
 				node.receiveSocket, node.lockUpdateMember);
@@ -138,7 +142,7 @@ public class Node {
 		try {
 			DatagramSocket s = new DatagramSocket(3457);
 			while (true) {
-				//DSLogger.log("Node", "main", "Started receiver");
+				// DSLogger.log("Node", "main", "Started receiver");
 				byte b[] = new byte[2048];
 				DatagramPacket packet = new DatagramPacket(b, b.length);
 				s.receive(packet);
