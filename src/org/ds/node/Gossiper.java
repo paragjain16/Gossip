@@ -73,10 +73,8 @@ public class Gossiper implements Runnable{
 			Member memberToGossip = chooseRandom();
 			printGossip(memberToGossip);
 			if(memberToGossip!=null){
-				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
 				socket.send(packet);
-				
 			}
 			DSLogger.log("Gossiper", "run", "Exiting gossiper");
 		}catch (IOException e) {
@@ -105,23 +103,6 @@ public class Gossiper implements Runnable{
 		
 	}
 	
-	public Member chooseProbRandom(){
-		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
-		int percent = 4;
-		Random random = new Random();
-		int tryAnother = 15;
-		while(tryAnother-- >0){
-			int i = random.nextInt(memberList.size()*percent);
-			DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
-			if(!(memberList.get(i) == itself)){
-				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen to gossip");
-				return memberList.get(i);
-			}
-		}
-		DSLogger.report("Gossiper", "No members to choose");
-		return null;
-		
-	}
 	
 	/*Print Gossip method*/
 	public void printGossip(Member mem){
