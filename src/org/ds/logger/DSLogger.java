@@ -8,6 +8,9 @@ public class DSLogger {
 		 public static void log(String className, String methodName, String msg){
 			 log.debug(className+":"+methodName+"~"+msg);
 		 }
+		 public static void report(String key, String value){
+			 log.info(key+" : "+value);
+		 }
 		 /* public static void main(String[] args)
 		                throws IOException,SQLException{
 		   
