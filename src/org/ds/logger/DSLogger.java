@@ -9,7 +9,11 @@ public class DSLogger {
 			 log.debug(className+":"+methodName+"~"+msg);
 		 }
 		 public static void report(String key, String value){
-			 log.info(key+" : "+value);
+			 if(value==""){
+				 log.info(key);
+			 }else{
+				 log.info(key+" : "+value);
+			 }
 		 }
 		 /* public static void main(String[] args)
 		                throws IOException,SQLException{
