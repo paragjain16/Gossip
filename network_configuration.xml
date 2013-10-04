@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <networkInfo>
-     <contactMachine>172.16.167.176:3456:1</contactMachine> 
+     <contactMachine>172.16.171.20:3456:1</contactMachine> 
 	<!-- <serverAddr>192.17.11.9:3456</serverAddr>
 	 <serverAddr>192.17.11.10:3456</serverAddr> -->
 </networkInfo>

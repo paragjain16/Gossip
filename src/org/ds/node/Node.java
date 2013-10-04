@@ -40,8 +40,7 @@ public class Node {
 		lockUpdateMember = new Object();
 		try {
 			receiveSocket = new DatagramSocket(port);
-			DSLogger.log("Node", "run", "Receving socket boud to "
-					+ receiveSocket.getInetAddress());
+			//DSLogger.log("Node", "run", "Receving socket boud to "+ receiveSocket.getInetAddress());
 			itself = new Member(InetAddress.getByName(getLocalIP()), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id " + itself.getIdentifier() + " joined");
