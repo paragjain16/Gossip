@@ -67,8 +67,8 @@ public class Node {
 		int port = 0;
 		String id = null;
 		Member contactMember = null;
-		if (args.length < 1) {
-			System.out.println("Please pass id  as a parameter");
+		if (args.length < 2) {
+			System.out.println("Please pass port and id  as a parameter");
 			System.exit(0);
 		} else {
 			port = Integer.parseInt(args[0]);
