@@ -32,14 +32,14 @@ public class Gossiper implements Runnable{
 	}
 	
 	public void run(){	
-		//DSLogger.log("Gossiper", "run", "Entered");
+		DSLogger.log("Gossiper", "run", "Entered");
 		
 		synchronized(lockUpdateMember){
-			//DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
+			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
-			//DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
+			DSLogger.log("Gossiper", "run", itself.getIdentifier()+" added to member list");
 			Set<String> keys = aliveMembers.keySet();
 			Member aMember;
 			keysToRemove = new ArrayList<String>();
@@ -49,7 +49,7 @@ public class Gossiper implements Runnable{
 					keysToRemove.add(aMember.getIdentifier());
 					//if(!aMember.getIdentifier().startsWith(":")){
 					deadMembers.put(aMember.getIdentifier(), aMember);
-					DSLogger.log("Gossiper", "run", aMember.getIdentifier()+" added to dead list");
+					DSLogger.report(aMember.getIdentifier()," added to dead list");
 					   //aliveMembers.remove(aMember.getIdentifier());
 					//}
 				}
@@ -58,10 +58,10 @@ public class Gossiper implements Runnable{
 				aliveMembers.remove(keytoRemove);
 				DSLogger.log("Gossiper", "run", keytoRemove+" removed from alive list");
 			}
-			//DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
+			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
 		}
-		//DSLogger.log("Gossiper", "run", "Lock released by gossiper");
+		DSLogger.log("Gossiper", "run", "Lock released by gossiper");
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
@@ -78,9 +78,9 @@ public class Gossiper implements Runnable{
 				socket.send(packet);
 				
 			}
-			//DSLogger.log("Gossiper", "run", "Exiting gossiper");
+			DSLogger.log("Gossiper", "run", "Exiting gossiper");
 		}catch (IOException e) {
-			//DSLogger.log("Gossiper", "run", e.getMessage());
+			DSLogger.log("Gossiper", "run", e.getMessage());
 			e.printStackTrace();
 		}finally{
 			socket.close();
@@ -89,43 +89,42 @@ public class Gossiper implements Runnable{
 	}
 	
 	public Member chooseRandom(){
-		//DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
+		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
 		Random random = new Random();
 		int tryAnother = 15;
 		while(tryAnother-- >0){
 			int i = random.nextInt(memberList.size());
-			//DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
+			DSLogger.log("Gossiper", "chooseRandom", "Random "+memberList.get(i).getIdentifier());
 			if(!(memberList.get(i) == itself)){
 				DSLogger.log("Gossiper", "chooseRandom", "Member "+memberList.get(i).getIdentifier()+" chosen to gossip");
 				return memberList.get(i);
 			}
 		}
-		DSLogger.log("Gossiper", "chooseRandom", "No members to choose");
+		DSLogger.report("Gossiper", "No members to choose");
 		return null;
 		
 	}
 	/*Print Gossip method*/
 	public void printGossip(Member mem){
 		if(mem!=null){
-			//System.out.println("Gossiping to "+mem.getIdentifier());
 			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
 		System.out.println("Alive Members ---------------------------- Local Time " + new Date());
-		DSLogger.log("Gossiper", "run", "Alive Members ---------------------------- Local Time " + new Date());
+		DSLogger.report("Alive Members at ",""+new Date());
 		Set<String> keys = aliveMembers.keySet();
 		Member aMember;
 		for(String key: keys){
 			aMember =aliveMembers.get(key);
 			System.out.println(aMember.getIdentifier());
-			DSLogger.log("Gossiper", "run", aMember.getIdentifier());
+			DSLogger.report(aMember.getIdentifier(),"");
 		}
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
 		keys = deadMembers.keySet();;
 		for(String key: keys){
 			aMember =deadMembers.get(key);
 			System.out.println(aMember.getIdentifier());
-			DSLogger.log("Gossiper", "run", "Dead Members ---------------------------- Local Time " + new Date());
-			DSLogger.log("Gossiper", "run", aMember.getIdentifier());
+			DSLogger.report("Dead Members at ",""+new Date());
+			DSLogger.report(aMember.getIdentifier(),"");
 		}
 	}
 }
