@@ -121,23 +121,21 @@ public class Receiver implements Runnable {
 									// is
 									// greater than incoming member's heartbeat.
 
-								} else { // Reincarnation of a dead member,
-											// remove
-											// it from dead member list and add
-											// it
-											// to alive member list.
-									DSLogger.log("Receiver", "run", "Reincarnation for "+memAddress); 
-									
+								} else { // False positive!!
+										// remove from dead member list and add
+										// it
+										// to alive member list.
+      								DSLogger.report(memAddress," False positive detected for this member");
 									Member localObj = deadMap.get(memAddress);
 									localObj.setHeartBeat(member.getHeartBeat());
 									localObj.setTimeStamp(new Date().getTime());
 									deadMap.remove(memAddress);
 									aliveMap.put(memAddress, localObj);
-									DSLogger.report(memAddress," Reincarnation of the machine with different id");
+									
 								}
 							}
 
-							else { // A new member is being added to the list.
+							else { // A new member is being added to the list. (Might include reincarnations of previously dead members
 								DSLogger.log("Receiver", "run", "New member added with "+memAddress); 
 								DSLogger.report(memAddress," New member added to the list");
 								aliveMap.put(memAddress, member);
