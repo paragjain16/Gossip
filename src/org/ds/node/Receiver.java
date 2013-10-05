@@ -75,6 +75,8 @@ public class Receiver implements Runnable {
 						if(aliveMap.containsKey("#"+member.getAddress().getHostAddress())){
 							aliveMap.remove("#"+member.getAddress().getHostAddress());
 							aliveMap.put(memAddress, member);
+							DSLogger.report(memAddress,"New member added to the list");
+							continue;
 						}
 						
 						else if (aliveMap.containsKey(memAddress)) { // Found a match
