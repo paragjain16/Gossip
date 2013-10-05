@@ -47,9 +47,8 @@ public class Gossiper implements Runnable{
 				aMember =aliveMembers.get(key);
 				if(aMember.checkTimeOut()){
 					keysToRemove.add(aMember.getIdentifier());
-					//if(!aMember.getIdentifier().startsWith("#")){
-					deadMembers.put(aMember.getIdentifier(), aMember);
 					if(!aMember.getIdentifier().startsWith("#")){
+						deadMembers.put(aMember.getIdentifier(), aMember);
 						DSLogger.report(aMember.getIdentifier()," added to dead list");
 					}
 					   //aliveMembers.remove(aMember.getIdentifier());
@@ -125,24 +124,28 @@ public class Gossiper implements Runnable{
 			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
 		System.out.println("Alive Members ---------------------------- Local Time " + new Date());
-		DSLogger.report("--------- Alive Members at ",""+new Date()+"------------");
+		//DSLogger.report("--------- Alive Members at ",""+new Date()+"------------");
 		Set<String> keys = aliveMembers.keySet();
 		Member aMember;
 		for(String key: keys){
 			aMember =aliveMembers.get(key);
-			System.out.println(aMember.getIdentifier());
-			DSLogger.report(aMember.getIdentifier(),"");
+			if(!aMember.getIdentifier().startsWith("#")){
+				System.out.println(aMember.getIdentifier());
+			}
+			//DSLogger.report(aMember.getIdentifier(),"");
 		}
-		DSLogger.report("-----------End of Alive Members List ----------","");
+		//DSLogger.report("-----------End of Alive Members List ----------","");
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
-		DSLogger.report("-----------Dead Members at ",""+new Date()+"---------------");
+		//DSLogger.report("-----------Dead Members at ",""+new Date()+"---------------");
 		keys = deadMembers.keySet();
 		for(String key: keys){
 			aMember =deadMembers.get(key);
-			System.out.println(aMember.getIdentifier());
+			if(!aMember.getIdentifier().startsWith("#")){
+				System.out.println(aMember.getIdentifier());
+			}
 			//DSLogger.report("Dead Members at ",""+new Date());
-			DSLogger.report(aMember.getIdentifier(),"");
+			//DSLogger.report(aMember.getIdentifier(),"");
 		}
-		DSLogger.report("-----------End of Dead Members List ----------","");
+		//DSLogger.report("-----------End of Dead Members List ----------","");
 	}
 }
