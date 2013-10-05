@@ -73,7 +73,7 @@ public class Node {
 			port = Integer.parseInt(args[0]);
 			id = args[1];
 		}
-		System.setProperty("logfile.name", "/tmp/machine." + id + ".log");
+		System.setProperty("logfile.name", "./machine." + id + ".log");
 		Node node = new Node(port, id);
 		System.out.println("Node with id " + id + " started with port: " + port);
 
