@@ -175,7 +175,7 @@ public class Receiver implements Runnable {
 												"New member added with "
 														+ memAddress);
 										DSLogger.report(memAddress,
-												" Brand New member added to the list");
+												"New member added to the list");
 										aliveMap.put(memAddress, member);
 									}
 								}
