@@ -118,13 +118,16 @@ public class Gossiper implements Runnable{
 			System.out.println(aMember.getIdentifier());
 			DSLogger.report(aMember.getIdentifier(),"");
 		}
+		DSLogger.report("-----------End of Alive Members List ----------","");
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
+		DSLogger.report("Dead Members at ",""+new Date());
 		keys = deadMembers.keySet();
 		for(String key: keys){
 			aMember =deadMembers.get(key);
 			System.out.println(aMember.getIdentifier());
-			DSLogger.report("Dead Members at ",""+new Date());
+			//DSLogger.report("Dead Members at ",""+new Date());
 			DSLogger.report(aMember.getIdentifier(),"");
 		}
+		DSLogger.report("-----------End of Dead Members List ----------","");
 	}
 }
