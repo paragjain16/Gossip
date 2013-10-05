@@ -72,11 +72,24 @@ public class Gossiper implements Runnable{
 				oos = new ObjectOutputStream(baos);
 				oos.writeObject(memberList);
 				byte[] buf = baos.toByteArray();
-				Member memberToGossip = chooseRandom();
-				printGossip(memberToGossip);
-				if(memberToGossip!=null){
-					DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
-					socket.send(packet);
+				/* Using expression 2 seconds  = Log N base k where N is no of machines and k is no of machines to gossip
+				 * As out timeout time is 3 seconds and 5 seconds is the deadline in which the 
+				 * gossip of new dead or alive member should spread thats why 
+				 * taking using sqrt of no of machines multiplied by gossip time period in seconds */
+
+				int noOfMachinestoGossip = (int)Math.floor(Math.sqrt(memberList.size()*0.5));
+				
+				if(noOfMachinestoGossip < 1){ // Gossip to atleast one machine
+					noOfMachinestoGossip=1;
+				}
+				DSLogger.log("Gossiper", "run", "No of members to gossip "+noOfMachinestoGossip);
+				for(int i=0; i < noOfMachinestoGossip; i++ ){
+					Member memberToGossip = chooseRandom();
+					printGossip(memberToGossip);
+					if(memberToGossip!=null){
+						DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
+						socket.send(packet);
+					}
 				}
 				DSLogger.log("Gossiper", "run", "Exiting gossiper");
 			}catch (IOException e) {
