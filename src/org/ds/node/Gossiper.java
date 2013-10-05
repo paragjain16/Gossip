@@ -49,7 +49,9 @@ public class Gossiper implements Runnable{
 					keysToRemove.add(aMember.getIdentifier());
 					//if(!aMember.getIdentifier().startsWith("#")){
 					deadMembers.put(aMember.getIdentifier(), aMember);
-					DSLogger.report(aMember.getIdentifier()," added to dead list");
+					if(!aMember.getIdentifier().startsWith("#")){
+						DSLogger.report(aMember.getIdentifier()," added to dead list");
+					}
 					   //aliveMembers.remove(aMember.getIdentifier());
 					//}
 				}
