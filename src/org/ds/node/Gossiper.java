@@ -60,30 +60,30 @@ public class Gossiper implements Runnable{
 			}
 			DSLogger.log("Gossiper", "run", "Alive and dead member list updated");
 			memberList = new ArrayList<Member>(aliveMembers.values());
-		}
-		DSLogger.log("Gossiper", "run", "Lock released by gossiper");
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
-		try {
-			socket = new DatagramSocket();
-			oos = new ObjectOutputStream(baos);
-			oos.writeObject(memberList);
-			byte[] buf = baos.toByteArray();
-			Member memberToGossip = chooseRandom();
-			printGossip(memberToGossip);
-			if(memberToGossip!=null){
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
-				socket.send(packet);
+			DSLogger.log("Gossiper", "run", "Lock released by gossiper");
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = null;
+			try {
+				socket = new DatagramSocket();
+				oos = new ObjectOutputStream(baos);
+				oos.writeObject(memberList);
+				byte[] buf = baos.toByteArray();
+				Member memberToGossip = chooseRandom();
+				printGossip(memberToGossip);
+				if(memberToGossip!=null){
+					DatagramPacket packet = new DatagramPacket(buf, buf.length, memberToGossip.getAddress(), memberToGossip.getPort());
+					socket.send(packet);
+				}
+				DSLogger.log("Gossiper", "run", "Exiting gossiper");
+			}catch (IOException e) {
+				DSLogger.log("Gossiper", "run", e.getMessage());
+				e.printStackTrace();
+			}finally{
+				socket.close();
 			}
-			DSLogger.log("Gossiper", "run", "Exiting gossiper");
-		}catch (IOException e) {
-			DSLogger.log("Gossiper", "run", e.getMessage());
-			e.printStackTrace();
-		}finally{
-			socket.close();
 		}
-		
 	}
 	
 	public Member chooseRandom(){
@@ -110,7 +110,7 @@ public class Gossiper implements Runnable{
 			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
 		System.out.println("Alive Members ---------------------------- Local Time " + new Date());
-		DSLogger.report("Alive Members at ",""+new Date());
+		DSLogger.report("--------- Alive Members at ",""+new Date()+"------------");
 		Set<String> keys = aliveMembers.keySet();
 		Member aMember;
 		for(String key: keys){
@@ -120,7 +120,7 @@ public class Gossiper implements Runnable{
 		}
 		DSLogger.report("-----------End of Alive Members List ----------","");
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
-		DSLogger.report("Dead Members at ",""+new Date());
+		DSLogger.report("-----------Dead Members at ",""+new Date()+"---------------");
 		keys = deadMembers.keySet();
 		for(String key: keys){
 			aMember =deadMembers.get(key);
