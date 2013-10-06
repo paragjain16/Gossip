@@ -14,6 +14,13 @@ import java.util.Set;
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 
+/**
+ * @author pjain11, mallapu2
+ * A thread of this class is invoked every 500 ms 
+ * this thread randomly chooses a member from 
+ * the member list and gossips its member list 
+ *
+ */
 public class Gossiper implements Runnable{
 	private HashMap<String, Member> aliveMembers;
 	private HashMap<String, Member> deadMembers;
@@ -33,9 +40,10 @@ public class Gossiper implements Runnable{
 	
 	public void run(){	
 		DSLogger.log("Gossiper", "run", "Entered");
-		
+		//Acquire a lock on membership list
 		synchronized(lockUpdateMember){
 			DSLogger.log("Gossiper", "run", "Lock Acquired by gossiper");
+			//Increment and update its own heartbeat and timestamp
 			itself.incrementHB();
 			itself.setTimeStamp(new Date().getTime());
 			aliveMembers.put(itself.getIdentifier(), itself);
@@ -45,14 +53,19 @@ public class Gossiper implements Runnable{
 			keysToRemove = new ArrayList<String>();
 			for(String key: keys){
 				aMember =aliveMembers.get(key);
+				//Check members for timeout
 				if(aMember.checkTimeOut()){
 					keysToRemove.add(aMember.getIdentifier());
+					// At boot up the contact machines ip address will be read from 
+					// a local file so this machine will not have its id which a 
+					// combination of identifier given to it which starting +"#"+ ip address
+					// thus the contact machine's id will start with # so don't put it
+					// in dead list now... this id will be updated when the contact machine
+					// sends first gossip to this machine with its complete identifier
 					if(!aMember.getIdentifier().startsWith("#")){
 						deadMembers.put(aMember.getIdentifier(), aMember);
 						DSLogger.report(aMember.getIdentifier()," added to dead list");
 					}
-					   //aliveMembers.remove(aMember.getIdentifier());
-					//}
 				}
 			}
 			for(String keytoRemove: keysToRemove){
@@ -99,7 +112,7 @@ public class Gossiper implements Runnable{
 			}
 		}
 	}
-	
+	//Choose a random member to gossip.. try 15 times if the chosen member is itself otherwise return null
 	public Member chooseRandom(){
 		DSLogger.log("Gossiper", "chooseRandom", "Choosing a Random member");
 		Random random = new Random();
@@ -112,7 +125,7 @@ public class Gossiper implements Runnable{
 				return memberList.get(i);
 			}
 		}
-		DSLogger.report("Gossiper", "No members to choose");
+		DSLogger.log("Gossiper", "run", "No members to choose");
 		return null;
 		
 	}
@@ -124,7 +137,6 @@ public class Gossiper implements Runnable{
 			System.out.println("Gossiping to "+mem.getIdentifier());
 		}
 		System.out.println("Alive Members ---------------------------- Local Time " + new Date());
-		//DSLogger.report("--------- Alive Members at ",""+new Date()+"------------");
 		Set<String> keys = aliveMembers.keySet();
 		Member aMember;
 		for(String key: keys){
@@ -132,20 +144,14 @@ public class Gossiper implements Runnable{
 			if(!aMember.getIdentifier().startsWith("#")){
 				System.out.println(aMember.getIdentifier());
 			}
-			//DSLogger.report(aMember.getIdentifier(),"");
 		}
-		//DSLogger.report("-----------End of Alive Members List ----------","");
 		System.out.println("Dead Members ----------------------------- Local Time "+ new Date());
-		//DSLogger.report("-----------Dead Members at ",""+new Date()+"---------------");
 		keys = deadMembers.keySet();
 		for(String key: keys){
 			aMember =deadMembers.get(key);
 			if(!aMember.getIdentifier().startsWith("#")){
 				System.out.println(aMember.getIdentifier());
 			}
-			//DSLogger.report("Dead Members at ",""+new Date());
-			//DSLogger.report(aMember.getIdentifier(),"");
 		}
-		//DSLogger.report("-----------End of Dead Members List ----------","");
 	}
 }
