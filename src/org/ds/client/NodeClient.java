@@ -6,7 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
+/**
+ * 
+ * @author pjain11,mallapu2
+ * Class responsible for the client to send leave message to the node server instructing it to
+ * leave the network.
+ */
 public class NodeClient {
     public static void main(String[] args){
     	

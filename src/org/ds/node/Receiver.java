@@ -16,7 +16,12 @@ import java.util.Set;
 
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
-
+/**
+ * 
+ * @author pjain11,mallapu2
+ * Class responsible for receiver thread which updates the local membership list maintained in the node 
+ * with the membership list received over the network.
+ */
 public class Receiver implements Runnable {
 
 	private Map<String, Member> aliveMap;
@@ -199,7 +204,6 @@ public class Receiver implements Runnable {
 				DSLogger.log("Receiver", "run", e.getMessage());
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				DSLogger.log("Receiver", "run", e.getMessage());
 				e.printStackTrace();
 			}
@@ -215,6 +219,7 @@ public class Receiver implements Runnable {
 		this.nodeSocket = nodeSocket;
 	}
 
+	/* Method to shutdown this thread when the node is leaving the network*/
 	public void shutDown() {
 		String close = new String("close");
 
@@ -226,11 +231,9 @@ public class Receiver implements Runnable {
 					baos.toByteArray().length, InetAddress.getLocalHost(), 3456);
 			nodeSocket.send(p);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			DSLogger.log("Receiver", "run", e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			DSLogger.log("Receiver", "run", e.getMessage());
 			e.printStackTrace();
 		}
