@@ -22,11 +22,17 @@ import java.util.concurrent.TimeUnit;
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 import org.ds.networkConf.XmlParseUtility;
-
+/**
+ * 
+ * @author pjain11,mallapu2
+ * Class responsible for the main node in the network which co-ordinates the gossiping of membership list 
+ * as well as updating the local membership list maintained in the node.
+ * 
+ */
 public class Node {
 	private HashMap<String, Member> aliveMembers;
 	private HashMap<String, Member> deadMembers;
-	final private Object lockUpdateMember;
+	final private Object lockUpdateMember; //Lock object used to synchornize the execution of gossiper and receiver.
 	private DatagramSocket receiveSocket;
 	private Gossiper gossiper;
 	private Receiver receiver;
@@ -62,7 +68,6 @@ public class Node {
 
 		String contactMachineIP;
 		String contactMachinePort;
-		String contactMachineId;
 		int port = 0;
 		String id = null;
 		Member contactMember = null;
@@ -91,7 +96,7 @@ public class Node {
 				e.printStackTrace();
 			}
 			DSLogger.report(node.itself.getIdentifier(), "Contacting the machine: "+contactMachineAddr+" to join the network");
-			node.aliveMembers.put(contactMember.getIdentifier(), contactMember);
+			node.aliveMembers.put(contactMember.getIdentifier(), contactMember); //Adding the contact machine to gossip list.
 			DSLogger.log("Node", "main", "Alive member list updated with "
 					+ contactMember.getIdentifier());
 		} else {
@@ -137,20 +142,18 @@ public class Node {
 		DSLogger.log("Node", "main", "Starting receiver thread");
 		node.receiver = new Receiver(node.aliveMembers, node.deadMembers,
 				node.receiveSocket, node.lockUpdateMember);
-		// scheduler.schedule(node.receiver, 0 , TimeUnit.SECONDS);
 		scheduler.execute(node.receiver);
 		try {
 			DatagramSocket s = new DatagramSocket(3457);
 			while (true) {
-				// DSLogger.log("Node", "main", "Started receiver");
 				byte b[] = new byte[2048];
 				DatagramPacket packet = new DatagramPacket(b, b.length);
 				s.receive(packet);
 				String cmd = new String(packet.getData(), 0, packet.getLength());
-				if (cmd.equals("leave")) {
+				if (cmd.equals("leave")) { //If instructed to leave, spawn a one time gossip thread to send leave message.
 					scheduler.shutdown();
 					node.receiver.shutDown();
-					node.itself.setHeartBeat(-2);
+					node.itself.setHeartBeat(-2); //Since the gossiper increments the heartbeat, set it to -2 so that heartbeat would be -1 in the member list.
 					Thread gossipLeave = new Thread(new Gossiper(
 							node.aliveMembers, node.deadMembers,
 							node.lockUpdateMember, node.itself));
@@ -170,15 +173,14 @@ public class Node {
 			e.printStackTrace();
 		}
 
-		// while(true){}
-	}
+}
 
+	/**Method responsible to get the local IP which is obtained by iterating over network interfaces in the machine*/
 	public static String getLocalIP() {
 		Enumeration<NetworkInterface> interfaces = null;
 		try {
 			interfaces = NetworkInterface.getNetworkInterfaces();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		while (interfaces.hasMoreElements()) {
@@ -189,7 +191,6 @@ public class Node {
 						|| current.isVirtual())
 					continue;
 			} catch (SocketException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			Enumeration<InetAddress> addresses = current.getInetAddresses();
