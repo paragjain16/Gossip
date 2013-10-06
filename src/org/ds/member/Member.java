@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
 
+/**
+ * @author pjain11, mallapu2
+ * Represents a member having - 
+ * identifier as - id#ipaddress where id passed from command line while starting the node
+ * heartBeat - which is updated before gossiping
+ * some other housekeeping variables and related methods
+ */
 public class Member implements Serializable{
 	private InetAddress address;
 	private int heartBeat;
