@@ -56,12 +56,13 @@ public class Gossiper implements Runnable{
 				//Check members for timeout
 				if(aMember.checkTimeOut()){
 					keysToRemove.add(aMember.getIdentifier());
-					// At boot up the contact machines ip address will be read from 
-					// a local file so this machine will not have its id which a 
-					// combination of identifier given to it which starting +"#"+ ip address
-					// thus the contact machine's id will start with # so don't put it
+					// At boot up the contact machine's ip address will be read from 
+					// a local file so it will not have a id which is a 
+					// combination of identifier given to it during start up +"#"+ ip address.
+					// Thus the contact machine's id will start with # for now so don't put it
 					// in dead list now... this id will be updated when the contact machine
 					// sends first gossip to this machine with its complete identifier
+					// Logic for updating id is in Receiver.java class
 					if(!aMember.getIdentifier().startsWith("#")){
 						deadMembers.put(aMember.getIdentifier(), aMember);
 						DSLogger.report(aMember.getIdentifier()," added to dead list");
